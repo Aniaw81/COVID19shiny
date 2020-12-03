@@ -15,7 +15,7 @@ This presentation is a part of the assignment of week 4, Developing Data Product
 The working application can be found here:
 [COVID-19](https://anna-witkowiak.shinyapps.io/COVID-19/)
 
-ui.R and server.R files can be found on [github]()
+ui.R and server.R files can be found on [github](https://github.com/Aniaw81/COVID19shiny)
 
 
 ## Data
