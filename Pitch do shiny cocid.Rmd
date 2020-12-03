@@ -1,0 +1,63 @@
+---
+title: "Reproducible Pitch for shiny COVID-19 application"
+author: "Anna Witkowiak"
+date: "3 12 2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+This presentation is a part of the assignment of week 4, Developing Data Products course from Coursera. It describes Shiny application that presents COVID-19 cases in Poland and neighboring countries. The user decides about time range for data that she is interested in. She also decides which countries from given list she wants to see.
+The working application can be found here:
+[COVID-19](https://anna-witkowiak.shinyapps.io/COVID-19/)
+
+ui.R and server.R files can be found on [github]()
+
+
+## Data
+
+Data for this project comes from European Centre for Disease Prevention and Control.
+[ECDC](https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide?fbclid=IwAR2mL2MBgR6ldQ82kBrvFblcdDiFV2psu3W-pJu01G3GPQMCLz-npqNfssI).
+
+I decided to load this data only once as I can't be sure that there will be always available. Unfortunately in this way data can be shown at most until 28th November.
+
+I decided also to limit country data to Poland and neighboring countries.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+if (FALSE) {
+data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+covidcases<- data %>%
+    dplyr::filter(geoId %in% c("PL","DE","CZ","SK","RU","LT","UA","BY")) %>%
+    dplyr::mutate(time=dmy(dateRep), geoId=droplevels(geoId))
+save(covidcases,file="covidcases.Rda")
+}
+load("covidcases.Rda")
+
+```
+
+## Input and calculations
+
+Users choose time range using slider input and the list of countries with select input.
+Based on that application prepares data to calculations.
+
+
+
+## Output
+
+The application has two tabs. In the first tab we can find plot (prepared in plotly) about new COVID-19 cases for chosen countries in selected time range.
+The second one gives us table with the sum of cases for every chosen country in selected time range.
+If user selects all possible countries and chooses maximum time range, the output on the first tab looks like this:
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(plotly)
+plot_ly(covidcases,x = ~time,y = ~cases,color = ~geoId, mode="lines")
+```
+
+And the second:
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+aggregate(covidcases$cases,by = list(Country = covidcases$geoId), FUN = sum) %>%
+            rename(`sum of cases` = x)
+```
